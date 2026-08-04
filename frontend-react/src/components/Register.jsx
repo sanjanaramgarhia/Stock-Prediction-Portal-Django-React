@@ -1,5 +1,7 @@
 import React, { useState } from 'react'
 import axios from 'axios'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faSpinner } from '@fortawesome/free-solid-svg-icons'
 
 const Register = () => {
     const [username, setUsername] = useState('')
@@ -7,9 +9,11 @@ const Register = () => {
     const [password, setPassword] = useState('')
     const [errors, setErrors] = useState({})
     const [success, setSuccess] = useState(false)
+    const [loading, setLoading] = useState(false)
 
     const handleRegistration = async (e) => {
         e.preventDefault();
+        setLoading(true);
 
         const userData = {
             username, email, password
@@ -21,13 +25,13 @@ const Register = () => {
             console.log('Registration successful');
             setErrors({})
             setSuccess(true)
-        }
-        catch (error) {
+        } catch (error) {
             setErrors(error.response.data)
             console.error('Registration error: ', error.response.data)
+        } finally {
+            setLoading(false)
         }
     }
-
     return (
         <>
             <div className='container'>
@@ -42,12 +46,18 @@ const Register = () => {
                             <div className='mb-3'>
                                 <input type="email" className='form-control' placeholder='Email address' value={email} onChange={(e) => setEmail(e.target.value)} />
                             </div>
+
                             <div className='mb-3'>
                                 <input type="password" className='form-control ' placeholder='Set password' value={password} onChange={(e) => setPassword(e.target.value)} />
                                 <small>{errors.password && <div className='text-danger'>{errors.password}</div>}</small>
                             </div>
                             {success && <div className='alert alert-success'>Registration Successful</div>}
-                            <button type='submit' className='btn btn-info d-block mx-auto'>Register</button>
+                            {loading ? (
+                                <button type='submit' className='btn btn-info d-block mx-auto' disabled><FontAwesomeIcon icon={faSpinner} spin /> Please wait...</button>
+                            ) : (
+                                <button type='submit' className='btn btn-info d-block mx-auto'>Register</button>
+                            )}
+
                         </form>
                     </div>
                 </div>
